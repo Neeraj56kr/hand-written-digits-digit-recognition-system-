@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Neural Digit Vision — an AI-powered handwritten digit recognition system built with TensorFlow ANN. Draw or upload a digit and watch the model predict in real-time." />
+    <title>Neural Digit Vision — AI Digit Recognition</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+
+<body>
+    <!-- ── Decorative Background Blobs ── -->
+    <div class="bg-blob blob-1" aria-hidden="true"></div>
+    <div class="bg-blob blob-2" aria-hidden="true"></div>
+    <div class="bg-blob blob-3" aria-hidden="true"></div>
+
+    <!-- ══════════════ HEADER ══════════════ -->
+    <header id="site-header">
+        <div class="header-inner">
+            <div class="logo" id="logo">
+                <span class="logo-icon">🧠</span>
+                <span class="logo-text">Neural<span class="logo-highlight">Digit</span>Vision</span>
+            </div>
+            <p class="tagline">AI-Powered Handwritten Digit Recognition</p>
+        </div>
+    </header>
+
+    <!-- ══════════════ MAIN ══════════════ -->
+    <main id="main-content">
+        <div class="app-grid">
+
+            <!-- ── Left: Input Panel ── -->
+            <section class="card input-panel" id="input-panel">
+                <h2 class="card-title">Draw or Upload</h2>
+                <p class="card-subtitle">Sketch a digit (0–9) on the canvas or upload an image file.</p>
+
+                <!-- Tab Switcher -->
+                <div class="tab-bar" id="tab-bar" role="tablist">
+                    <button class="tab active" id="tab-draw" role="tab" aria-selected="true" data-target="draw-area">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+                        Draw
+                    </button>
+                    <button class="tab" id="tab-upload" role="tab" aria-selected="false" data-target="upload-area">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Upload
+                    </button>
+                </div>
+
+                <!-- Canvas Area -->
+                <div class="input-area" id="draw-area">
+                    <div class="canvas-wrapper" id="canvas-wrapper">
+                        <canvas id="draw-canvas" width="280" height="280"></canvas>
+                    </div>
+                    <div class="canvas-controls">
+                        <button class="btn btn-ghost" id="btn-clear" type="button">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.42-8.77L1 10"/></svg>
+                            Clear
+                        </button>
+                        <button class="btn btn-primary" id="btn-predict-canvas" type="button">
+                            Predict
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Area -->
+                <div class="input-area hidden" id="upload-area">
+                    <label class="drop-zone" id="drop-zone" for="file-input">
+                        <svg class="drop-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <span class="drop-text">Drag &amp; drop image here</span>
+                        <span class="drop-subtext">or click to browse &bull; JPG, PNG</span>
+                        <input type="file" id="file-input" accept=".jpg,.jpeg,.png" hidden />
+                    </label>
+                    <div class="upload-preview hidden" id="upload-preview">
+                        <img id="preview-img" alt="Uploaded preview" />
+                        <button class="btn btn-ghost btn-sm" id="btn-remove-file" type="button">Remove</button>
+                    </div>
+                    <button class="btn btn-primary" id="btn-predict-upload" type="button" disabled>
+                        Predict
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ── Right: Result Panel ── -->
+            <section class="card result-panel" id="result-panel">
+                <h2 class="card-title">Prediction</h2>
+
+                <!-- Placeholder (before prediction) -->
+                <div class="result-placeholder" id="result-placeholder">
+                    <svg class="placeholder-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/><polyline points="7.5 4.21 12 6.81 16.5 4.21"/><polyline points="7.5 19.79 7.5 14.6 3 12"/><polyline points="21 12 16.5 14.6 16.5 19.79"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    <p>Draw or upload a digit to see the prediction</p>
+                </div>
+
+                <!-- Loading spinner -->
+                <div class="result-loading hidden" id="result-loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing…</p>
+                </div>
+
+                <!-- Prediction result -->
+                <div class="result-content hidden" id="result-content">
+                    <div class="predicted-digit-display">
+                        <span class="predicted-label">Predicted Digit</span>
+                        <span class="predicted-number" id="predicted-number">—</span>
+                        <span class="predicted-confidence" id="predicted-confidence">—</span>
+                    </div>
+
+                    <div class="probability-chart" id="probability-chart">
+                        <h3 class="chart-title">Confidence Distribution</h3>
+                        <!-- Bars generated by JS -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ── Model Info ── -->
+        <section class="card model-info" id="model-info">
+            <h2 class="card-title">Model Architecture</h2>
+            <div class="info-chips">
+                <div class="chip">
+                    <span class="chip-label">Type</span>
+                    <span class="chip-value">ANN (Sequential)</span>
+                </div>
+                <div class="chip">
+                    <span class="chip-label">Input</span>
+                    <span class="chip-value">28 × 28 grayscale</span>
+                </div>
+                <div class="chip">
+                    <span class="chip-label">Hidden 1</span>
+                    <span class="chip-value">Dense 128 · ReLU</span>
+                </div>
+                <div class="chip">
+                    <span class="chip-label">Hidden 2</span>
+                    <span class="chip-value">Dense 64 · ReLU</span>
+                </div>
+                <div class="chip">
+                    <span class="chip-label">Output</span>
+                    <span class="chip-value">Dense 10 · Softmax</span>
+                </div>
+                <div class="chip">
+                    <span class="chip-label">Dataset</span>
+                    <span class="chip-value">MNIST · 60k samples</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ══════════════ FOOTER ══════════════ -->
+    <footer id="site-footer">
+        <p>Built with <strong>TensorFlow</strong> &amp; <strong>Flask</strong> &bull; Neural Digit Vision By Neeraj Kushwaha</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
